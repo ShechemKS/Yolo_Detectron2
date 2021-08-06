@@ -1,0 +1,40 @@
+from detectron2.config import CfgNode as CN
+
+
+def add_yolo_config(cfg):
+    cfg.MODEL.YAML = "yolov5m.yaml"
+    cfg.MODEL.YOLO = CN()
+    cfg.MODEL.YOLO.FOCAL_LOSS_GAMMA = 0.0
+    cfg.MODEL.YOLO.BOX_LOSS_GAIN = 0.05
+    cfg.MODEL.YOLO.CLS_LOSS_GAIN = 0.3
+    cfg.MODEL.YOLO.CLS_POSITIVE_WEIGHT = 1.0
+    cfg.MODEL.YOLO.OBJ_LOSS_GAIN = 0.7
+    cfg.MODEL.YOLO.OBJ_POSITIVE_WEIGHT = 1.0
+    cfg.MODEL.YOLO.LABEL_SMOOTHING = 0.0
+    cfg.MODEL.YOLO.ANCHOR_T = 4.0
+    cfg.MODEL.YOLO.CONF_THRESH = 0.001
+    cfg.MODEL.YOLO.IOU_THRES = 0.65
+    cfg.SOLVER.BASE_LR = 0.001
+    cfg.SOLVER.MOMENTUM = 0.937
+    cfg.SOLVER.NESTEROV = True
+    cfg.SOLVER.WEIGHT_DECAY = 0.0005
+    cfg.SOLVER.WEIGHT_DECAY_NORM = 0.0
+    cfg.SOLVER.WEIGHT_DECAY_BIAS = 0.0005
+    cfg.SOLVER.LR_SCHEDULER_NAME = "WarmupCosineLR"
+    cfg.SOLVER.WARMUP_ITERS = 1000
+    cfg.SOLVER.IMS_PER_BATCH = 16
+    cfg.INPUT.SIZE = 416
+    cfg.INPUT.HSV_H = 0.015
+    cfg.INPUT.HSV_S = 0.7
+    cfg.INPUT.HSV_V = 0.4
+    cfg.INPUT.DEGREES = 0.0
+    cfg.INPUT.TRANSLATE = 0.1
+    cfg.INPUT.SCALE = 0.5
+    cfg.INPUT.SHEAR = 0.0
+    cfg.INPUT.PERSPECTIVE = 0.0
+    cfg.INPUT.FLIPUD = 0.0
+    cfg.INPUT.FLIPLR = 0.5
+    cfg.INPUT.MOSAIC = 1.0   # IGNORED
+    cfg.INPUT.MIXUP = 0.0
+    cfg.INPUT.FORMAT = "BGR"
+    cfg.TEST.AUG.SIZE = 416
