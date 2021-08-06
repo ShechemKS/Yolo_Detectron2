@@ -29,10 +29,5 @@ log
 # env
 .env
 
-# script
-convert_onnx.py
-convert_onnx.sh
-
 # config
 memory.config
-config.*
