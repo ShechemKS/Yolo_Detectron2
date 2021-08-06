@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from general import bbox_iou
+from .general import bbox_iou
 
 from detectron2.config import configurable
 

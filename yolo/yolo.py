@@ -15,8 +15,8 @@ from detectron2.data.detection_utils import convert_image_to_rgb
 from detectron2.modeling.postprocessing import detector_postprocess
 from detectron2.modeling import build_backbone
 
-from general import non_max_suppression, scale_coords
-from loss import ComputeLoss
+from .general import non_max_suppression, scale_coords
+from .loss import ComputeLoss
 
 
 __all__ = ["Yolo"]
@@ -78,6 +78,7 @@ class Yolo(nn.Module):
         using it lead to lower performance. Here we maintain an EMA of #foreground to
         stabilize the normalizer.
         """
+        self.loss = loss
         self.loss_normalizer = 100  # initialize with any reasonable #fg that's not too small
         self.loss_normalizer_momentum = 0.9
         self.init_stride()
@@ -277,7 +278,6 @@ class YoloHead(nn.Module):
         input_shape: List[ShapeSpec],
         nc,
         anchors,
-        ch
     ):
 
         super().__init__()
@@ -291,6 +291,7 @@ class YoloHead(nn.Module):
         self.register_buffer('anchors', a)  # shape(nl,na,2)
         self.register_buffer('anchor_grid', a.clone().view(
             self.nl, 1, -1, 1, 1, 2))  # shape(nl,1,na,1,1,2)
+        ch = [x.channels for x in input_shape]
         self.m = nn.ModuleList(Conv2d(x, self.no * self.na, 1) for x in ch)
 
     @classmethod
@@ -301,13 +302,10 @@ class YoloHead(nn.Module):
             model_yaml = yaml.safe_load(f)  # model dict
         anchors = model_yaml['anchors']
         nc = model_yaml['nc']
-        layers = model_yaml['backbone'] + model_yaml['head']
-        ch = [layers[x][3][0] for x in model_yaml['head'][-1][0]]    # The input layers to the head
         return {
             "input_shape": input_shape,
             "nc": nc,
             "anchors": anchors,
-            "ch": ch,
         }
 
     def forward(self, x: List[Tensor]):
@@ -340,8 +338,8 @@ class YoloHead(nn.Module):
         # https://arxiv.org/abs/1708.02002 section 3.3
         # cf = torch.bincount(torch.tensor(np.concatenate(dataset.labels, 0)[:, 0]).long(), minlength=nc) + 1.
         for mi, s in zip(self.m, self.stride):  # from
-            b = mi.bias.view(self.m.na, -1)  # conv.bias(255) to (3,85)
+            b = mi.bias.view(self.na, -1)  # conv.bias(255) to (3,85)
             b.data[:, 4] += math.log(8 / (640 / s) ** 2)  # obj (8 objects per 640 image)
-            b.data[:, 5:] += math.log(0.6 / (self.m.nc - 0.99)
+            b.data[:, 5:] += math.log(0.6 / (self.nc - 0.99)
                                       ) if cf is None else torch.log(cf / cf.sum())  # cls
             mi.bias = torch.nn.Parameter(b.view(-1), requires_grad=True)

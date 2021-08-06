@@ -39,7 +39,7 @@ INPUT:  # Uses Yolo's own transforms
   MOSAIC: 1.0   # IGNORED
   MIXUP: 0.0
   FORMAT: BGR
-OUTPUT_DIR: ./yolo/exp
+OUTPUT_DIR: ./outputs/exp
 TEST:
   AUG:
     SIZE: 416

@@ -5,15 +5,16 @@ import torch.nn.functional as F
 import torch.nn as nn
 
 from detectron2.modeling import BACKBONE_REGISTRY, Backbone
-from detectron2.layers import ShapeSpec
+from detectron2.layers import ShapeSpec, BatchNorm2d, Conv2d
 from .common import Conv, C3, SPP, Concat, Focus
 from .general import make_divisible
 
 
 class DarkNet(Backbone):
 
-    def __init__(self, cfg='yolov5.yaml', ch=3):  # model, input channels, number of classes
+    def __init__(self, cfg, ch=3):  # model, input channels, number of classes
         super().__init__()
+        self.yaml = cfg
         ch = self.yaml['ch'] = self.yaml.get('ch', ch)  # input channels
         ch = [ch]
         c2 = ch[-1]
@@ -78,7 +79,7 @@ class DarkNet(Backbone):
         self.initialize_weights()
 
     def forward(self, x):
-        return self.forward_augment(x)  # augmented inference, None
+        return self.forward_once(x)  # augmented inference, None
 
     def forward_once(self, x):
         y = []
@@ -97,10 +98,9 @@ class DarkNet(Backbone):
     def initialize_weights(self):
         for m in self.modules():
             t = type(m)
-            print(t)
-            if t is nn.Conv2d:
+            if t is Conv2d:
                 pass  # nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-            elif t is nn.BatchNorm2d:
+            elif t is BatchNorm2d:
                 m.eps = 1e-3
                 m.momentum = 0.03
 

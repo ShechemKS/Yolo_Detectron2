@@ -6,10 +6,6 @@ import torch
 import torch.nn as nn
 
 from detectron2.layers import CNNBlockBase, Conv2d, get_norm
-# from utils.datasets_v3 import letterbox
-# from utils.general import non_max_suppression, make_divisible, scale_coords, increment_path, xyxy2xywh, save_one_box
-# from utils.plots_v3 import colors, plot_one_box
-# from utils.torch_utils import time_synchronized
 
 
 def autopad(k, p=None):  # kernel, padding
@@ -34,7 +30,7 @@ class Conv(CNNBlockBase):
         self.conv = Conv2d(c1, c2, k, s, autopad(k, p), groups=g, bias=False, norm=norm, activation=act)
 
     def forward(self, x):
-        return self.act(self.bn(self.conv(x)))
+        return self.conv(x)
 
 
 class Bottleneck(CNNBlockBase):

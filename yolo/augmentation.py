@@ -4,7 +4,7 @@ import numpy as np
 
 
 def build_yolo_aug(cfg):
-    augs = [T.Resize(cfg.INPUT.SIZE, cfg.INPUT.SIZE)]
+    augs = [T.Resize(cfg.INPUT.SIZE)]
     if cfg.INPUT.DEGREES > 0.0:
         augs.append(T.RandomRotation(cfg.INPUT.DEGREES))
     if cfg.INPUT.TRANSLATE > 0.0 or cfg.INPUT.SCALE > 0.0:
@@ -17,6 +17,7 @@ def build_yolo_aug(cfg):
         augs.append(T.RandomFlip(cfg.INPUT.FLIPLR, horizontal=True, vertical=False))
     if cfg.INPUT.HSV_H or cfg.INPUT.HSV_S or cfg.INPUT.HSV_V:
         augs.append(ColorAugmentation(cfg.INPUT))
+    return augs
 
 
 class ColorAugmentation(T.Augmentation):
