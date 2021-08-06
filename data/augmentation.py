@@ -65,6 +65,6 @@ class HSVTransform(T.Transform):
             (h * self.r[0]) % 180,
             np.clip(s * self.r[1], 0, 255),
             np.clip(v * self.r[2], 0, 255)
-        ).astype(dtype)
+        ).astype(dtype)     # Apply the HSV tranformation
         img = cv2.cvtColor(img_hsv, self.back_cvt)
         return img
