@@ -1,0 +1,27 @@
+_BASE_: "Base-YoloV5.yaml"
+MODEL:
+  WEIGHTS: weights/yolov5mD2-Full.pth
+  YAML: configs/yolov5m.yaml
+  QUANTIZATION:
+    scope: [
+            # backbone
+            'backbone',
+            # Head
+            'head',
+           ]
+    keyword: ["debug", "dorefa", "lsq"]
+    fm_enable: True 
+    wt_enable: True 
+    padding_after_quant: True
+    fm_bit: 4.0
+    wt_bit: 4.0
+    fm_boundary: 1.0
+    wt_boundary: 1.0
+    wt_quant_group: 1
+    wt_adaptive: "var-mean"
+    policy: 'configs/policy_yolov5m-fixpoint.txt'
+DATASETS:
+  TRAIN: ("coco_2017_train",)
+  TEST: ("coco_2017_val",)
+OUTPUT_DIR: './outputs/QAT-4bit'
+VERSION: 2

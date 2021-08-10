@@ -13,7 +13,11 @@ from detectron2.engine import (
     default_setup,
     launch
 )
-from detectron2.data import DatasetMapper, build_detection_train_loader
+from detectron2.data import (
+    DatasetMapper,
+    build_detection_train_loader,
+    build_detection_test_loader
+)
 from detectron2.evaluation import COCOEvaluator
 from detectron2.config import get_cfg
 
@@ -31,8 +35,13 @@ class Trainer(DefaultTrainer):
     @classmethod
     def build_train_loader(cls, cfg):
         mapper = DatasetMapper(cfg, is_train=True, augmentations=build_yolo_aug(cfg))
-
         return build_detection_train_loader(cfg, mapper=mapper)
+
+    @classmethod
+    def build_test_loader(cls, cfg, dataset_name):
+        mapper = DatasetMapper(cfg, is_train=False,
+                               augmentations=build_yolo_aug(cfg, training=False))
+        return build_detection_test_loader(cfg, dataset_name, mapper=mapper)
 
 
 def setup(args):

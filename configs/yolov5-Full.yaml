@@ -1,6 +1,6 @@
 _BASE_: "Base-YoloV5.yaml"
 MODEL:
-  WEIGHTS: weights/yolov5m.pt
+  WEIGHTS: weights/yolov5mD2.pth
   YAML: configs/yolov5m.yaml
 DATASETS:
   TRAIN: ("coco_2017_train",)

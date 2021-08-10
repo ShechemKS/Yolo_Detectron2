@@ -5,6 +5,11 @@ import numpy as np
 import torchvision
 
 
+def one_cycle(y1=0.0, y2=1.0, steps=100):
+    # lambda function for sinusoidal ramp from y1 to y2
+    return lambda x: ((1 - math.cos(x * math.pi / steps)) / 2) * (y2 - y1) + y1
+
+
 def xywh2xyxy(x):
     # Convert nx4 boxes from [x, y, w, h] to [x1, y1, x2, y2] where xy1=top-left, xy2=bottom-right
     y = x.clone() if isinstance(x, torch.Tensor) else np.copy(x)

@@ -126,7 +126,8 @@ class ComputeLoss(object):
             self.ssi = list(stride).index(16)
 
     def __call__(self, p, instances):  # predictions, targets, model is ignored
-        device = instances[0].device
+        device = instances[0].gt_boxes.device
+        self.to(device)
         lcls, lbox, lobj = torch.zeros(1, device=device), torch.zeros(
             1, device=device), torch.zeros(1, device=device)
         tcls, tbox, indices, anchors = self.build_targets(
@@ -180,10 +181,15 @@ class ComputeLoss(object):
         lbox *= self.box_loss_gain
         lobj *= self.obj_loss_gain
         lcls *= self.cls_loss_gain
-        bs = tobj.shape[0]  # batch size
+        # bs = tobj.shape[0]  # batch size
 
-        loss = lbox + lobj + lcls
-        return loss * bs, torch.cat((lbox, lobj, lcls, loss)).detach()
+        # loss = lbox + lobj + lcls
+        # return loss * bs, torch.cat((lbox, lobj, lcls, loss)).detach()
+        return {
+            "loss_box": lbox,
+            "loss_obj": lobj,
+            "loss_cls": lcls,
+        }
 
     def build_targets(self, p, gt_instances):
         """
@@ -201,15 +207,13 @@ class ComputeLoss(object):
             # x, y, w, h - relative and x, y are centers
             if len(gt_per_image) > 0:
                 boxes = gt_per_image.gt_boxes.tensor.clone()
-                h, w = gt_per_image.image_size()
-                print(boxes.shape)
+                h, w = gt_per_image.image_size
                 boxes[:, 0:2] = (boxes[:, 0:2] + boxes[:, 2:4]) / 2
                 boxes[:, 2:4] = (boxes[:, 2:4] - boxes[:, 0:2]) * 2
                 boxes[:, ::2] /= float(w)
                 boxes[:, 1::2] /= float(h)
-                classes = gt_per_image.gt_classes.clone()
+                classes = torch.unsqueeze(gt_per_image.gt_classes.clone(), dim=1)
                 t = torch.cat([torch.ones_like(classes)*i, classes, boxes], dim=1)
-                print(t.shape)
                 targets.append(t)
         targets = torch.cat(targets, 0)
 

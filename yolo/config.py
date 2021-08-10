@@ -14,6 +14,8 @@ def add_yolo_config(cfg):
     cfg.MODEL.YOLO.ANCHOR_T = 4.0
     cfg.MODEL.YOLO.CONF_THRESH = 0.001
     cfg.MODEL.YOLO.IOU_THRES = 0.65
+    cfg.MODEL.PIXEL_MEAN: [0.0, 0.0, 0.0]
+    cfg.MODEL.PIXEL_STD: [255.0, 255.0, 255.0]
     cfg.SOLVER.BASE_LR = 0.001
     cfg.SOLVER.MOMENTUM = 0.937
     cfg.SOLVER.NESTEROV = True

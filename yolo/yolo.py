@@ -61,7 +61,7 @@ class Yolo(nn.Module):
         self.head = head
 
         self.num_classes = num_classes
-        self.single_class = num_classes == 1
+        self.single_cls = num_classes == 1
         # Inference Parameters
         self.conf_thres = conf_thres
         self.iou_thres = iou_thres
@@ -79,8 +79,8 @@ class Yolo(nn.Module):
         stabilize the normalizer.
         """
         self.loss = loss
-        self.loss_normalizer = 100  # initialize with any reasonable #fg that's not too small
-        self.loss_normalizer_momentum = 0.9
+        # self.loss_normalizer = 100  # initialize with any reasonable #fg that's not too small
+        # self.loss_normalizer_momentum = 0.9
         self.init_stride()
 
     @classmethod
@@ -227,15 +227,15 @@ class Yolo(nn.Module):
                 self.head.grid[i] = self.head._make_grid(nx, ny).to(x[i].device)
 
             y = x[i].sigmoid()
-            if self.head.inplace:
-                y[..., 0:2] = (y[..., 0:2] * 2. - 0.5 + self.head.grid[i]) * self.head.stride[i]  # xy
-                y[..., 2:4] = (y[..., 2:4] * 2) ** 2 * self.head.anchor_grid[i]  # wh
-            else:  # for YOLOv5 on AWS Inferentia https://github.com/ultralytics/yolov5/pull/2953
-                xy = (y[..., 0:2] * 2. - 0.5 + self.head.grid[i]) * self.head.stride[i]  # xy
-                wh = (y[..., 2:4] * 2) ** 2 * self.head.anchor_grid[i].view(1, self.head.na, 1, 1, 2)  # wh
-                y = torch.cat((xy, wh, y[..., 4:]), -1)
+            # if self.head.inplace:
+            y[..., 0:2] = (y[..., 0:2] * 2. - 0.5 + self.head.grid[i]) * self.head.stride[i]  # xy
+            y[..., 2:4] = (y[..., 2:4] * 2) ** 2 * self.head.anchor_grid[i]  # wh
+            # else:  # for YOLOv5 on AWS Inferentia https://github.com/ultralytics/yolov5/pull/2953
+            #     xy = (y[..., 0:2] * 2. - 0.5 + self.head.grid[i]) * self.head.stride[i]  # xy
+            #     wh = (y[..., 2:4] * 2) ** 2 * self.head.anchor_grid[i].view(1, self.head.na, 1, 1, 2)  # wh
+            #     y = torch.cat((xy, wh, y[..., 4:]), -1)
             z.append(y.view(bs, -1, self.head.no))
-        return self.process_inference(torch.cat(z, 1))
+        return self.process_inference(torch.cat(z, 1), image_sizes)
 
     def process_inference(self, out, image_sizes):
         out = non_max_suppression(out, self.conf_thres, self.iou_thres, multi_label=True, agnostic=self.single_cls)

@@ -6,6 +6,7 @@ __pycache__/
 ipytorch
 tmp
 log
+outputs
 
 # tmp files
 *.swp
