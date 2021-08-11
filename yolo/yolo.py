@@ -255,7 +255,7 @@ class Yolo(nn.Module):
             result = Instances(img_size)
             result.pred_boxes = Boxes(predn[:, :4])  # TODO: Check if resizing needed
             result.scores = predn[:, 4]
-            result.pred_classes = predn[:, 5]   # TODO: Check the classes
+            result.pred_classes = predn[:, 5].int()   # TODO: Check the classes
             results_all.append(result)
         return results_all
 
