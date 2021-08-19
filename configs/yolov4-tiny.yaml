@@ -1,0 +1,36 @@
+nc: 80
+depth_multiple: 1
+width_multiple: 1
+
+anchors: 
+  - [10,14,  23,27,  37,58]
+  - [81,82,  135,169,  344,319]
+
+backbone:
+  [[-1, 1, Conv, [32, 3, 2]],
+   [-1, 1, Conv, [64, 3]],
+   [-1, 1, CSPOSA, [128]],
+   [-1, 1, nn.MaxPool2d, [2, 2]],
+   [-1, 1, CSPOSA, [256]],
+   [-1, 1, nn.MaxPool2d, [2, 2]],
+   # CSPOSA block, but need intermediate output
+   [-1, 1, Conv, [128, 3]],
+   [-2, 1, Conv, [128, 3]],
+   [-1, 1, Conv, [128, 3]],
+   [-1, 1, Conv, [128, 3]],
+   [[-1, -2], 1, Concat, [1]],
+   [-1, 1, Conv, [256, 1]],
+   [[-1, -5, -6], 1, Concat, [1]],
+   [-1, 1, nn.MaxPool2d, [2, 2]],
+   [-1, 1, Conv, [512, 3]],
+  ]
+
+head:
+  [[-1, 1, Conv, [256, 1]],
+   [-1, 1, Conv, [512, 3]], # Detect 1
+   [-2, 1, Conv, [128, 1]],
+   [-1, 1, nn.Upsample, [None, 2]],
+   [[-1, -8], 1, Concat, [1]],
+   [-1, 1, Conv, [256, 1]], # Detect 2
+   [[20, 16], 1, Detect, [nc, anchors]],
+  ]

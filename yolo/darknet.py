@@ -6,13 +6,13 @@ import torch.nn as nn
 
 from detectron2.modeling import BACKBONE_REGISTRY, Backbone
 from detectron2.layers import ShapeSpec, BatchNorm2d, Conv2d
-from .common import Conv, C3, SPP, Concat, Focus
+from .common import Conv, C3, SPP, Concat, Focus, CSPOSA
 from .general import make_divisible
 
 
 class DarkNet(Backbone):
 
-    def __init__(self, cfg, ch=3):  # model, input channels, number of classes
+    def __init__(self, cfg, ch=3, norm="BN", activation="nn.LeakyReLU"):
         super().__init__()
         self.yaml = cfg
         ch = self.yaml['ch'] = self.yaml.get('ch', ch)  # input channels
@@ -24,6 +24,9 @@ class DarkNet(Backbone):
         self.out_features = -1
         self.out_feature_channels = {}
         self.out_feature_strides = {}
+        activation = eval(activation) if isinstance(activation, str) else activation
+        post_conv = {'norm': norm,
+                     'act': activation}
         if 'Detect' in self.yaml['head'][-1]:
             self.out_features = self.yaml['head'][-1][0]
             print("Detection Head found")
@@ -37,19 +40,22 @@ class DarkNet(Backbone):
                 except BaseException:
                     pass
             n = max(round(n * gd), 1) if n > 1 else n
-            if m in [Conv, C3, SPP, Focus]:
+            if m in [Conv, C3, SPP, Focus, CSPOSA]:
                 c1, c2 = ch[f], args[0]
                 c2 = make_divisible(c2 * gw, 8)
-
                 args = [c1, c2, *args[1:]]
+                kwargs = post_conv
                 if m is C3:
                     args.insert(2, n)
                     n = 1
             elif m is Concat:
                 c2 = sum([ch[x] for x in f])
+                kwargs = {}
             else:
                 c2 = ch[f]
-            m_ = nn.Sequential(*[m(*args) for _ in range(n)]) if n > 1 else m(*args)
+                kwargs = {}
+            m_ = nn.Sequential(*[m(*args, **kwargs)
+                               for _ in range(n)]) if n > 1 else m(*args, **kwargs)
             t = str(m)[8:-2].replace('__main__.', '')  # module type
             np = sum([x.numel() for x in m_.parameters()])  # number params
             m_.i, m_.f, m_.type, m_.np = i, f, t, np  # attach index, 'from' index, type, number params
@@ -121,4 +127,6 @@ def build_darknet_backbone(cfg, input_shape):
     with open(model_yaml_file) as f:
         model_yaml = yaml.safe_load(f)  # model dict
     in_channels = 3
-    return DarkNet(model_yaml, in_channels)
+    norm = cfg.MODEL.YOLO.NORM
+    activation = cfg.MODEL.YOLO.ACTIVATION
+    return DarkNet(model_yaml, in_channels, norm, activation)

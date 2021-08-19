@@ -1,6 +1,6 @@
 _BASE_: "Base-Yolo.yaml"
 MODEL:
-  WEIGHTS: None
+  WEIGHTS: weights/yolov5mD2-Full.pth
   YAML: configs/yolov5m.yaml
   QUANTIZATION:
     scope: [
@@ -10,18 +10,17 @@ MODEL:
             'head',
            ]
     keyword: ["debug", "dorefa", "lsq"]
-    stable: 10000
     fm_enable: True 
     wt_enable: True 
     padding_after_quant: True
-    fm_bit: 4.0
-    wt_bit: 4.0
+    fm_bit: 8.0
+    wt_bit: 8.0
     fm_boundary: 1.0
     wt_boundary: 1.0
     fm_half_range: False
     wt_quant_group: 1
     wt_adaptive: "var-mean"
-    policy: 'configs/policy_yolov5m-test.txt'
+    policy: 'configs/policy_yolov5m-test-8bit.txt'
 SOLVER:
   BASE_LR: 0.01
   MOMENTUM: 0.9
@@ -30,11 +29,11 @@ SOLVER:
   WEIGHT_DECAY_NORM: 0.0
   WEIGHT_DECAY_BIAS: 0.0001
   LR_SCHEDULER_NAME: WarmupCosineLR
-  WARMUP_ITERS: 5000
+  WARMUP_ITERS: 10000
   MAX_ITER: 400000
   IMS_PER_BATCH: 16
 DATASETS:
   TRAIN: ("coco_2017_train",)
   TEST: ("coco_2017_val",)
-OUTPUT_DIR: './outputs/QAT-4bit'
+OUTPUT_DIR: './outputs/QAT-8bit'
 VERSION: 2

@@ -2,7 +2,13 @@ _BASE_: "Base-Yolo.yaml"
 MODEL:
   WEIGHTS: weights/yolov5mD2.pth
   YAML: configs/yolov5m.yaml
+  YOLO:
+    NORM: None
+    ACTIVATION: nn.ReLU
 DATASETS:
   TRAIN: ("coco_2017_train",)
   TEST: ("coco_2017_val",)
+SOLVER:
+  IMS_PER_BATCH: 32
+OUTPUT_DIR: ./outputs/no-bn-relu
 VERSION: 2

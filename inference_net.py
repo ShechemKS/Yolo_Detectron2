@@ -120,3 +120,4 @@ if __name__ == "__main__":
             if os.path.isdir(args.output):
                 assert os.path.isdir(args.output), args.output
                 out_filename = os.path.join(args.output, os.path.basename(path))
+                visualized_output.save(out_filename)
