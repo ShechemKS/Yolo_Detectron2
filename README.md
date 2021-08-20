@@ -15,13 +15,14 @@ This repo also enables quantization and quantization-aware-training using the fr
 > Chen, Peng, et al. "Aqd: Towards accurate quantized object detection." Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2021.
 
 The quantization framework is implemented in 
-[QTool: A low-bit quantization toolbox for deep neural networks in computer vision](https://github.com/aim-uofa/model-quantization)
+[QTool: A low-bit quantization toolbox for deep neural networks in computer vision](https://github.com/MonashAI/QTool).
+Use the quantization branch to train and test quantized models.
 
 ## Setup
 - This repo requires installation of the Detectron2 framework. 
 - Installation instructions can be found on their own [GitHub page](https://github.com/facebookresearch/detectron2).
 - However, if you intend on using the quantization modules, 
-follow the instructions given in [QTool - Detection](https://github.com/aim-uofa/model-quantization/blob/master/doc/detectron2.md) 
+follow the instructions given in [QTool - Detection](https://github.com/MonashAI/QTool/blob/master/doc/detectron2.md) 
 to install the quantization fork of the detectron framework. Currently, Yolo has only been tested within this framework. 
 - Once Detectron2 has been installed, clone this repo. You can clone it anywhere you like, but it is convenient to clone it to the `detectron2/projects` directory for consistency.
 ```
@@ -45,9 +46,9 @@ python inference_net.py --config-file configs/yolov5-Full.yaml --inputs path/to/
 ```
 
 ## TODO
-- [ ] Create a non-quantization branch for compatibility with the main detectron framework
+- [x] Create a non-quantization branch for compatibility with the main detectron framework
 - [ ] Add support for other Yolo versions
 
 ## References
 - [facebookresearch/detectron2](https://github.com/facebookresearch/detectron2)
-- [aim-uofa/model-quantization](https://github.com/aim-uofa/model-quantization)
+- [MonashAI/QTool](https://github.com/MonashAI/QTool)
