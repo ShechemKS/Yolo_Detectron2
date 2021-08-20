@@ -1,0 +1,92 @@
+
+on init:
+  by_index: 0
+  by_tag: fm
+  enable: False
+
+  by_index: 0
+  by_tag: wt
+  enable: True
+  bit: 8
+  num_levels: 256
+  level_num: 256.0
+
+  by_index : 83 84 85
+  enable: True
+  bit: 8
+  num_levels: 256
+  level_num: 256.0
+  
+  by_index: 83 84 85 0
+  correlate: 0.8
+  adaptive: 'none'
+  
+  by_index: all:
+  global_buffer: clip_val
+
+on norm:
+  by_index: all
+  enable: True
+  input_index: "clip_val-same"
+  input_scale: 0.222222222222
+  choice: 'RoundSTE'
+
+on eltwise:
+  by_index: all
+  enable: True
+
+  by_index: 0
+  x_index: clip_val-2-norm
+  y_index: clip_val-6-norm
+
+  by_index: 1
+  x_index: alpha-0-eltwise
+  y_index: clip_val-8-norm
+
+  by_index: 2
+  x_index: clip_val-10-norm
+  y_index: clip_val-14-norm
+
+  by_index: 3
+  x_index: alpha-2-eltwise
+  y_index: clip_val-16-norm
+
+  by_index: 4
+  x_index: alpha-3-eltwise
+  y_index: clip_val-18-norm
+
+  by_index: 5
+  x_index: alpha-4-eltwise
+  y_index: clip_val-20-norm
+
+  by_index: 6
+  x_index: alpha-5-eltwise
+  y_index: clip_val-22-norm
+
+  by_index: 7
+  x_index: alpha-6-eltwise
+  y_index: clip_val-24-norm
+
+  by_index: 8
+  x_index: clip_val-26-norm
+  y_index: clip_val-30-norm
+
+  by_index: 9
+  x_index: alpha-8-eltwise
+  y_index: clip_val-32-norm
+
+  by_index: 10
+  x_index: alpha-9-eltwise
+  y_index: clip_val-34-norm
+
+  by_index: 11
+  x_index: alpha-10-eltwise
+  y_index: clip_val-36-norm
+
+  by_index: 12
+  x_index: alpha-11-eltwise
+  y_index: clip_val-38-norm
+
+  by_index: 13
+  x_index: alpha-12-eltwise
+  y_index: clip_val-40-norm
