@@ -5,7 +5,7 @@ import math
 import torch
 import torch.nn as nn
 
-from detectron2.layers import CNNBlockBase, Conv2d, get_norm, EltWiseModule
+from detectron2.layers import CNNBlockBase, Conv2d, get_norm
 
 
 def autopad(k, p=None):  # kernel, padding
@@ -48,10 +48,10 @@ class Bottleneck(CNNBlockBase):
         self.cv2 = Conv(c_, c2, 3, 1, g=g, **kwargs)
         self.add = False
         if shortcut and c1 == c2:
-            self.add = EltWiseModule()
+            self.add = True
 
     def forward(self, x):
-        return self.add(x, self.cv2(self.cv1(x))) if self.add else self.cv2(self.cv1(x))
+        return x + self.cv2(self.cv1(x)) if self.add else self.cv2(self.cv1(x))
 
 
 class C3(CNNBlockBase):
